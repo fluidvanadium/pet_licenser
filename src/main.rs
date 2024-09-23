@@ -1,15 +1,30 @@
+#![forbid(unsafe_code)]
+
 fn main() {
+    let mut pets = vec![];
+    let mut sets_of_equipment = vec![];
     for pet_species in PetSpecies::iter() {
-        println!("{:?}", pet_species);
+        // println!("{:?}", pet_species);
         let equipment = equipment::PetEquipment::assemble_default_for_species(&pet_species);
-        println!("{:?}", equipment);
+        // println!("{:?}", equipment);
+        pets.push(pet_species);
+        sets_of_equipment.push(equipment);
     }
+    try_licensing(&pets[2], &sets_of_equipment[3]);
 }
 
+pub fn try_licensing(pet: &PetSpecies, equipment: &PetEquipment) {
+    match PetLicense::apply_for_license(equipment, pet.clone()) {
+        Ok(license) => println!("licensing succeeded! {}", license.license_text()),
+        Err(licensing_error) => println!("licensing failed with error {}", licensing_error),
+    }
+}
+use equipment::PetEquipment;
+use license::PetLicense;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-#[derive(Debug, EnumIter, Eq, PartialEq)]
+#[derive(Clone, Debug, EnumIter, Eq, PartialEq)]
 enum PetSpecies {
     Cat,
     Dog,

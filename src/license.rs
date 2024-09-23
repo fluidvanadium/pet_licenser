@@ -1,7 +1,10 @@
 use crate::{equipment::PetEquipment, PetSpecies};
+use getset::Getters;
 use thiserror::Error;
 
+#[derive(Getters)]
 pub struct PetLicense {
+    #[getset(get = "pub")]
     license_text: String,
 }
 
@@ -12,8 +15,8 @@ pub enum LicensingError {
 }
 
 impl PetLicense {
-    fn apply_for_license(
-        equipment: PetEquipment,
+    pub fn apply_for_license(
+        equipment: &PetEquipment,
         pet: PetSpecies,
     ) -> Result<PetLicense, LicensingError> {
         let expected_pet_species = equipment.for_which_species();
