@@ -1,9 +1,14 @@
 fn main() {
-    println!("{:?}", CompletePet::Lizard);
+    for pet_species in PetSpecies::iter() {
+        println!("{:?}", pet_species);
+    }
 }
 
-#[derive(Debug)]
-pub enum CompletePet {
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
+
+#[derive(Debug, EnumIter)]
+pub enum PetSpecies {
     Cat,
     Dog,
     Fish,
