@@ -11,6 +11,7 @@ fn main() {
         sets_of_equipment.push(equipment);
     }
     try_licensing(&pets[2], &sets_of_equipment[3]);
+    try_licensing(&pets[2], &sets_of_equipment[2]);
 }
 
 pub fn try_licensing(pet: &PetSpecies, equipment: &PetEquipment) {
@@ -25,7 +26,7 @@ use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
 #[derive(Clone, Debug, EnumIter, Eq, PartialEq)]
-enum PetSpecies {
+pub enum PetSpecies {
     Cat,
     Dog,
     Fish,
@@ -33,7 +34,7 @@ enum PetSpecies {
     Parrot,
 }
 
-pub mod equipment {
+pub(crate) mod equipment {
     use crate::PetSpecies;
 
     #[derive(Debug)]
@@ -45,7 +46,7 @@ pub mod equipment {
         NVacuum2000,
     }
     #[derive(Debug)]
-    struct Cage;
+    pub struct Cage;
 
     #[derive(Debug)]
     struct MammalEquipment {
@@ -100,14 +101,14 @@ pub mod equipment {
                     collar: Collar("garfield".to_string()),
                     food: MammalFood {},
                     hair_cleaner: HairCleaner::NVacuum2000,
-                    cage: Some(Cage {}),
+                    cage: None,
                 }),
                 PetSpecies::Dog => PetEquipment::Dog((
                     MammalEquipment {
                         collar: Collar("garfield".to_string()),
                         food: MammalFood {},
                         hair_cleaner: HairCleaner::NVacuum2000,
-                        cage: None,
+                        cage: Some(Cage {}),
                     },
                     Leash {},
                 )),
@@ -129,6 +130,15 @@ pub mod equipment {
                 PetEquipment::Fish(_) => PetSpecies::Fish,
                 PetEquipment::Lizard(_) => PetSpecies::Lizard,
                 PetEquipment::Parrot(_) => PetSpecies::Parrot,
+            }
+        }
+        pub fn cage(&self) -> Option<&Cage> {
+            match self {
+                PetEquipment::Cat(equipment) => equipment.cage.as_ref(),
+                PetEquipment::Dog(equipment) => equipment.0.cage.as_ref(),
+                PetEquipment::Fish(equipment) => None,
+                PetEquipment::Lizard(equipment) => Some(&equipment.cage),
+                PetEquipment::Parrot(equipment) => Some(&equipment.cage),
             }
         }
     }

@@ -12,6 +12,8 @@ pub struct PetLicense {
 pub enum LicensingError {
     #[error("Equipment for {0:?}. You have a {1:?}")]
     WrongSpecies(PetSpecies, PetSpecies),
+    #[error("Cage is required.")]
+    NoCage,
 }
 
 impl PetLicense {
@@ -21,9 +23,15 @@ impl PetLicense {
     ) -> Result<PetLicense, LicensingError> {
         let expected_pet_species = equipment.for_which_species();
         if expected_pet_species == pet {
-            Ok(PetLicense {
-                license_text: "same species? good enough".to_string(),
-            })
+            if equipment.cage().is_some() {
+                Ok(PetLicense {
+                    license_text:
+                        "its the species you claim? and you have got a cage? good enough."
+                            .to_string(),
+                })
+            } else {
+                Err(LicensingError::NoCage)
+            }
         } else {
             Err(LicensingError::WrongSpecies(expected_pet_species, pet))
         }
